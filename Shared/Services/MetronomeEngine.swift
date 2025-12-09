@@ -27,6 +27,10 @@ final class MetronomeEngine: Sendable {
     private let clickBuffer: AVAudioPCMBuffer
     private let accentBuffer: AVAudioPCMBuffer
 
+    // MARK: - Haptic Feedback
+
+    private let hapticManager: HapticManager
+
     // MARK: - Synchronized State
 
     private struct State {
@@ -79,6 +83,9 @@ final class MetronomeEngine: Sendable {
             format: format,
             amplitude: 0.8
         )
+
+        // Initialize haptic manager
+        self.hapticManager = HapticManager()
 
         setupAudio(format: format)
         setupInterruptionHandling()
@@ -136,6 +143,7 @@ final class MetronomeEngine: Sendable {
             }
         }
     }
+
 
     private func setupAudio(format: AVAudioFormat) {
         // Configure audio session category (but don't activate yet)
@@ -290,6 +298,13 @@ final class MetronomeEngine: Sendable {
             state.isPlaying = true
         }
 
+        // Trigger immediate callback for beat 0 (first beat)
+        // This ensures the first downbeat gets haptic/UI feedback
+        let isFirstBeatAccented = accentFirstBeat
+        hapticManager.playBeat(isDownbeat: isFirstBeatAccented)
+        let callback = callbackLock.withLock { $0 }
+        callback?(0, isFirstBeatAccented)
+
         // Schedule initial beats without timing
         scheduleBeatsImmediate()
     }
@@ -391,6 +406,9 @@ final class MetronomeEngine: Sendable {
 
             guard shouldContinue else { return }
 
+            // Trigger haptic feedback on downbeats
+            self.hapticManager.playBeat(isDownbeat: isAccented)
+
             // Invoke callback directly on completion handler thread
             // Caller is responsible for dispatching to MainActor if needed
             let callback = self.callbackLock.withLock { $0 }
@@ -402,9 +420,11 @@ final class MetronomeEngine: Sendable {
     }
 
     private func scheduleBeatImmediate() {
-        let (beatsScheduled, tempo, beatsPerMeasure, accentFirstBeat) = stateLock.withLock { state in
-            (state.beatsScheduled, state.tempo, state.beatsPerMeasure, state.accentFirstBeat)
+        let (beatsScheduled, tempo, beatsPerMeasure, accentFirstBeat, currentBeat) = stateLock.withLock { state in
+            (state.beatsScheduled, state.tempo, state.beatsPerMeasure, state.accentFirstBeat, state.currentBeat)
         }
+
+        print("📅 Scheduling beat: scheduled=\(beatsScheduled), current=\(currentBeat)")
 
         // Determine if this is an accented beat (first beat of measure)
         let isAccented = accentFirstBeat && (beatsScheduled % beatsPerMeasure == 0)
@@ -416,26 +436,47 @@ final class MetronomeEngine: Sendable {
         // Increment scheduled count
         stateLock.withLock { $0.beatsScheduled += 1 }
 
+        print("🎵 Scheduled beat \(beatsScheduled), isAccented=\(isAccented)")
+
         // Schedule the buffer WITHOUT timing (plays immediately in sequence)
-        // Use .dataPlayedBack to ensure callback fires when audio actually plays
+        // NOTE: The callback fires when the buffer has FINISHED playing, which means
+        // the NEXT beat is already playing when this callback fires. So we increment
+        // currentBeat first to sync haptics/UI with the currently playing beat.
         playerNode.scheduleBuffer(buffer, completionCallbackType: .dataPlayedBack) { [weak self] _ in
             guard let self = self else { return }
 
-            let (shouldContinue, beatInMeasure) = self.stateLock.withLock { state -> (Bool, Int) in
-                guard state.isPlaying else { return (false, 0) }
+            print("🔔 Beat completion callback fired")
 
-                let beatInMeasure = state.currentBeat % state.beatsPerMeasure
+            let (shouldContinue, beatInMeasure, isAccentedForCallback) = self.stateLock.withLock { state -> (Bool, Int, Bool) in
+                guard state.isPlaying else {
+                    print("❌ Not playing, stopping callbacks")
+                    return (false, 0, false)
+                }
+
+                // Increment FIRST because callback fires after the beat finishes
+                // (the next beat is already playing when this callback fires)
                 state.currentBeat += 1
                 state.beatsScheduled -= 1
 
-                return (true, beatInMeasure)
+                // Now calculate which beat is CURRENTLY playing
+                let beatInMeasure = state.currentBeat % state.beatsPerMeasure
+                let isAccentedForCallback = state.accentFirstBeat && (beatInMeasure == 0)
+
+                print("💫 Callback: beat \(state.currentBeat) (beatInMeasure=\(beatInMeasure)), scheduled=\(state.beatsScheduled)")
+
+                return (true, beatInMeasure, isAccentedForCallback)
             }
 
             guard shouldContinue else { return }
 
+            print("🎯 Triggering callback for beat \(beatInMeasure), isAccented=\(isAccentedForCallback)")
+
+            // Trigger haptic feedback on downbeats
+            self.hapticManager.playBeat(isDownbeat: isAccentedForCallback)
+
             // Invoke callback
             let callback = self.callbackLock.withLock { $0 }
-            callback?(beatInMeasure, isAccented)
+            callback?(beatInMeasure, isAccentedForCallback)
 
             // Schedule next beat to maintain buffer
             self.scheduleBeatsImmediate()
@@ -457,5 +498,11 @@ final class MetronomeEngine: Sendable {
     /// Whether the metronome is currently playing
     var isPlaying: Bool {
         stateLock.withLock { $0.isPlaying }
+    }
+
+    /// Enable or disable haptic feedback
+    var hapticsEnabled: Bool {
+        get { hapticManager.isEnabled }
+        set { hapticManager.isEnabled = newValue }
     }
 }

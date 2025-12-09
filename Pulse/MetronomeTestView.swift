@@ -15,6 +15,11 @@ final class MetronomeTestViewModel {
     var tempo: Double = 120.0
     var beatsPerMeasure: Int = 4
     var accentFirstBeat: Bool = true
+    var hapticsEnabled: Bool = true {
+        didSet {
+            engine.hapticsEnabled = hapticsEnabled
+        }
+    }
     var isPlaying: Bool = false
     var currentBeat: Int = 0
 
@@ -24,6 +29,9 @@ final class MetronomeTestViewModel {
                 self?.currentBeat = beat
             }
         }
+
+        // Initialize haptics state
+        engine.hapticsEnabled = hapticsEnabled
     }
 
     func togglePlayback() {
@@ -154,6 +162,10 @@ struct MetronomeTestView: View {
                 Toggle("Accent First Beat", isOn: $viewModel.accentFirstBeat)
                     .font(.headline)
                     .disabled(viewModel.isPlaying)
+
+                // Haptic toggle
+                Toggle("Haptic Feedback", isOn: $viewModel.hapticsEnabled)
+                    .font(.headline)
             }
             .padding(.horizontal)
 
