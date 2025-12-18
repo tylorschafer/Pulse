@@ -5,9 +5,9 @@
 //  Created by Tylor Schafer on 12/1/25.
 //
 
-import Testing
 @testable import Pulse
 import Foundation
+import Testing
 
 struct TimeSignatureTests {
 
