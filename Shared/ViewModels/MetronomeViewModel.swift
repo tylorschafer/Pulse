@@ -38,10 +38,25 @@ final class MetronomeViewModel {
     @ObservationIgnored
     private var engine: MetronomeEngine?
 
+    /// App Group UserDefaults for persisting settings across iPhone and Watch
+    @ObservationIgnored
+    private let defaults = AppGroupDefaults.shared
+
     // MARK: - Initialization
 
-    init(settings: MetronomeSettings = MetronomeSettings()) {
-        self.settings = settings
+    init(settings: MetronomeSettings? = nil) {
+        // Load saved settings from App Group UserDefaults, or use provided/default settings
+        if let settings = settings {
+            // Custom settings provided (e.g., for testing)
+            self.settings = settings
+            // Don't load playback state when custom settings are provided
+            self.isPlaying = false
+        } else {
+            // Load from persistence
+            self.settings = defaults.loadSettings()
+            self.isPlaying = defaults.loadPlaybackState()
+        }
+
         self.engine = MetronomeEngine()
         setupEngine()
     }
@@ -75,8 +90,8 @@ final class MetronomeViewModel {
 
     /// Start the metronome
     func start() {
-        // Validate tempo is within engine's supported range (40-240 BPM)
-        let clampedTempo = min(max(settings.tempo, 40), 240)
+        // Validate tempo is within engine's supported range (40-150 BPM)
+        let clampedTempo = min(max(settings.tempo, 40), 150)
         if clampedTempo != settings.tempo {
             settings.tempo = clampedTempo
         }
@@ -89,6 +104,9 @@ final class MetronomeViewModel {
 
         isPlaying = true
         currentBeat = 1
+
+        // Persist playback state
+        defaults.savePlaybackState(true)
     }
 
     /// Stop the metronome
@@ -96,17 +114,23 @@ final class MetronomeViewModel {
         engine?.stop()
         isPlaying = false
         currentBeat = 1
+
+        // Persist playback state
+        defaults.savePlaybackState(false)
     }
 
     // MARK: - Settings Updates
 
     /// Update tempo and restart if playing
     ///
-    /// - Parameter newTempo: The new tempo in BPM (will be clamped to 40-240 range)
+    /// - Parameter newTempo: The new tempo in BPM (will be clamped to 40-150 range)
     func updateTempo(_ newTempo: Int) {
         // Clamp to engine's supported range
-        let clampedTempo = min(max(newTempo, 40), 240)
+        let clampedTempo = min(max(newTempo, 40), 150)
         settings.tempo = clampedTempo
+
+        // Persist settings
+        defaults.saveSettings(settings)
 
         if isPlaying {
             // Restart to apply new tempo
@@ -120,6 +144,9 @@ final class MetronomeViewModel {
     func updateTimeSignature(_ newTimeSignature: TimeSignature) {
         settings.timeSignature = newTimeSignature
 
+        // Persist settings
+        defaults.saveSettings(settings)
+
         if isPlaying {
             // Restart to apply new time signature
             start()
@@ -131,6 +158,9 @@ final class MetronomeViewModel {
     /// - Parameter enabled: Whether to accent the first beat
     func updateAccentFirstBeat(_ enabled: Bool) {
         settings.accentFirstBeat = enabled
+
+        // Persist settings
+        defaults.saveSettings(settings)
 
         if isPlaying {
             // Restart to apply new accent setting
@@ -144,6 +174,9 @@ final class MetronomeViewModel {
     func updateHapticEnabled(_ enabled: Bool) {
         settings.hapticEnabled = enabled
         engine?.hapticsEnabled = enabled
+
+        // Persist settings
+        defaults.saveSettings(settings)
     }
 
     /// Update whether sound/audio feedback is enabled
@@ -152,6 +185,10 @@ final class MetronomeViewModel {
     /// - Note: Currently the engine always plays audio. This setting is for future use.
     func updateSoundEnabled(_ enabled: Bool) {
         settings.soundEnabled = enabled
+
+        // Persist settings
+        defaults.saveSettings(settings)
+
         // TODO: Implement audio muting in engine when needed
     }
 }

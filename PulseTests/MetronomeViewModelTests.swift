@@ -12,10 +12,18 @@ import Testing
 @MainActor
 struct MetronomeViewModelTests {
 
+    // MARK: - Setup
+
+    /// Clear all persisted data before each test to ensure clean state
+    init() {
+        AppGroupDefaults.shared.clearAll()
+    }
+
     // MARK: - Initialization Tests
 
     @Test("MetronomeViewModel initializes with default values")
     func testDefaultInitialization() {
+        AppGroupDefaults.shared.clearAll() // Ensure clean state
         let viewModel = MetronomeViewModel()
 
         #expect(viewModel.isPlaying == false)
@@ -142,19 +150,19 @@ struct MetronomeViewModelTests {
         #expect(viewModel.settings.tempo == 40, "Tempo below 40 should be clamped to 40")
     }
 
-    @Test("Update tempo clamps to maximum (240 BPM)")
+    @Test("Update tempo clamps to maximum (150 BPM)")
     func testUpdateTempoMaximumClamping() {
         let viewModel = MetronomeViewModel()
 
         viewModel.updateTempo(300)
 
-        #expect(viewModel.settings.tempo == 240, "Tempo above 240 should be clamped to 240")
+        #expect(viewModel.settings.tempo == 150, "Tempo above 150 should be clamped to 150")
     }
 
     @Test("Valid tempo values are not clamped")
     func testValidTempoValues() {
         let viewModel = MetronomeViewModel()
-        let validTempos = [40, 60, 100, 120, 180, 200, 240]
+        let validTempos = [40, 60, 100, 120, 150]
 
         for tempo in validTempos {
             viewModel.updateTempo(tempo)
@@ -350,7 +358,7 @@ struct MetronomeViewModelTests {
         viewModel.start()
 
         // Rapidly change tempo
-        for tempo in stride(from: 60, through: 200, by: 20) {
+        for tempo in stride(from: 60, through: 140, by: 20) {
             viewModel.updateTempo(tempo)
             #expect(viewModel.settings.tempo == tempo)
             #expect(viewModel.isPlaying == true)

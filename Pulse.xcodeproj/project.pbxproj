@@ -7,15 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8E4C9B512EF9105B00B94D89 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4C9B4F2EF9105B00B94D89 /* HapticManager.swift */; };
+		8E4C9B522EF9105B00B94D89 /* MetronomeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4C9B502EF9105B00B94D89 /* MetronomeEngine.swift */; };
+		8E4C9B532EF9105B00B94D89 /* AppGroupDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4C9B4E2EF9105B00B94D89 /* AppGroupDefaults.swift */; };
+		8E4C9B542EF9105B00B94D89 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4C9B4F2EF9105B00B94D89 /* HapticManager.swift */; };
+		8E4C9B552EF9105B00B94D89 /* MetronomeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4C9B502EF9105B00B94D89 /* MetronomeEngine.swift */; };
+		8E4C9B562EF9105B00B94D89 /* AppGroupDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4C9B4E2EF9105B00B94D89 /* AppGroupDefaults.swift */; };
 		8E85F86B2EDEA6BB00D2F285 /* Pulse Watch App Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 8E85F84B2EDEA6BA00D2F285 /* Pulse Watch App Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8E85F8812EDEB43800D2F285 /* MetronomeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E85F87B2EDEB43800D2F285 /* MetronomeSettings.swift */; };
 		8E85F8822EDEB43800D2F285 /* TimeSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E85F87C2EDEB43800D2F285 /* TimeSignature.swift */; };
 		8E85F8832EDEB43800D2F285 /* MetronomeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E85F87B2EDEB43800D2F285 /* MetronomeSettings.swift */; };
 		8E85F8842EDEB43800D2F285 /* TimeSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E85F87C2EDEB43800D2F285 /* TimeSignature.swift */; };
-		8EA334832EDEB83900B343FB /* MetronomeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA334822EDEB83900B343FB /* MetronomeEngine.swift */; };
-		8EA334842EDEB83900B343FB /* MetronomeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA334822EDEB83900B343FB /* MetronomeEngine.swift */; };
-		8EA334B42EE2B45200B343FB /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA334B32EE2B45200B343FB /* HapticManager.swift */; };
-		8EA334B52EE2B45200B343FB /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA334B32EE2B45200B343FB /* HapticManager.swift */; };
 		8EA334BA2EE7DDAD00B343FB /* MetronomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA334B82EE7DDAD00B343FB /* MetronomeViewModel.swift */; };
 		8EA334BB2EE7DDAD00B343FB /* MetronomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA334B82EE7DDAD00B343FB /* MetronomeViewModel.swift */; };
 		8EA334D72EE7E56300B343FB /* AnimatedGradientBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA334D42EE7E56300B343FB /* AnimatedGradientBackground.swift */; };
@@ -75,6 +77,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8E4C9B4E2EF9105B00B94D89 /* AppGroupDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupDefaults.swift; sourceTree = "<group>"; };
+		8E4C9B4F2EF9105B00B94D89 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
+		8E4C9B502EF9105B00B94D89 /* MetronomeEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeEngine.swift; sourceTree = "<group>"; };
 		8E5DA6342EB9A989001D1E75 /* Pulse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pulse.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E5DA6452EB9A98B001D1E75 /* PulseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PulseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E5DA64F2EB9A98B001D1E75 /* PulseUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PulseUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -83,8 +88,6 @@
 		8E85F8612EDEA6BB00D2F285 /* Pulse Watch App Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Pulse Watch App Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E85F87B2EDEB43800D2F285 /* MetronomeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeSettings.swift; sourceTree = "<group>"; };
 		8E85F87C2EDEB43800D2F285 /* TimeSignature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSignature.swift; sourceTree = "<group>"; };
-		8EA334822EDEB83900B343FB /* MetronomeEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeEngine.swift; sourceTree = "<group>"; };
-		8EA334B32EE2B45200B343FB /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		8EA334B82EE7DDAD00B343FB /* MetronomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeViewModel.swift; sourceTree = "<group>"; };
 		8EA334D42EE7E56300B343FB /* AnimatedGradientBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedGradientBackground.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -96,14 +99,6 @@
 				Info.plist,
 			);
 			target = 8E5DA6332EB9A989001D1E75 /* Pulse */;
-		};
-		8EA334862EE29F3300B343FB /* Exceptions for "PulseTests" folder in "Pulse Watch App Watch AppTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				MetronomeEngineTests.swift,
-				MetronomeSettingsTests.swift,
-			);
-			target = 8E85F8562EDEA6BB00D2F285 /* Pulse Watch App Watch AppTests */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -118,9 +113,6 @@
 		};
 		8E5DA6482EB9A98B001D1E75 /* PulseTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				8EA334862EE29F3300B343FB /* Exceptions for "PulseTests" folder in "Pulse Watch App Watch AppTests" target */,
-			);
 			path = PulseTests;
 			sourceTree = "<group>";
 		};
@@ -238,8 +230,9 @@
 		8E85F87E2EDEB43800D2F285 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				8EA334822EDEB83900B343FB /* MetronomeEngine.swift */,
-				8EA334B32EE2B45200B343FB /* HapticManager.swift */,
+				8E4C9B4E2EF9105B00B94D89 /* AppGroupDefaults.swift */,
+				8E4C9B4F2EF9105B00B94D89 /* HapticManager.swift */,
+				8E4C9B502EF9105B00B94D89 /* MetronomeEngine.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -537,11 +530,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8EA334B42EE2B45200B343FB /* HapticManager.swift in Sources */,
+				8E4C9B512EF9105B00B94D89 /* HapticManager.swift in Sources */,
+				8E4C9B522EF9105B00B94D89 /* MetronomeEngine.swift in Sources */,
+				8E4C9B532EF9105B00B94D89 /* AppGroupDefaults.swift in Sources */,
 				8EA334D72EE7E56300B343FB /* AnimatedGradientBackground.swift in Sources */,
 				8E85F8832EDEB43800D2F285 /* MetronomeSettings.swift in Sources */,
 				8EA334BA2EE7DDAD00B343FB /* MetronomeViewModel.swift in Sources */,
-				8EA334832EDEB83900B343FB /* MetronomeEngine.swift in Sources */,
 				8E85F8842EDEB43800D2F285 /* TimeSignature.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -565,10 +559,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				8EA334D82EE7E56300B343FB /* AnimatedGradientBackground.swift in Sources */,
+				8E4C9B542EF9105B00B94D89 /* HapticManager.swift in Sources */,
+				8E4C9B552EF9105B00B94D89 /* MetronomeEngine.swift in Sources */,
+				8E4C9B562EF9105B00B94D89 /* AppGroupDefaults.swift in Sources */,
 				8EA334BB2EE7DDAD00B343FB /* MetronomeViewModel.swift in Sources */,
-				8EA334842EDEB83900B343FB /* MetronomeEngine.swift in Sources */,
 				8E85F8812EDEB43800D2F285 /* MetronomeSettings.swift in Sources */,
-				8EA334B52EE2B45200B343FB /* HapticManager.swift in Sources */,
 				8E85F8822EDEB43800D2F285 /* TimeSignature.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

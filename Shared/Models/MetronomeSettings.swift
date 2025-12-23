@@ -12,13 +12,13 @@ struct MetronomeSettings: Equatable, Sendable {
     // MARK: - Constants
 
     static let minTempo = 30
-    static let maxTempo = 300
+    static let maxTempo = 150  // Capped at 150 BPM (2.5 beats/sec) to support haptics on all beats
     static let defaultTempo = 120
 
     // MARK: - Properties
 
     /// Tempo in beats per minute (BPM)
-    /// Valid range: 30-300 BPM
+    /// Valid range: 30-150 BPM (capped to support haptics on all beats without overload)
     var tempo: Int {
         didSet {
             tempo = tempo.clamped(to: Self.minTempo...Self.maxTempo)
@@ -31,7 +31,7 @@ struct MetronomeSettings: Equatable, Sendable {
     /// Whether sound/audio feedback is enabled
     var soundEnabled: Bool
 
-    /// Whether haptic feedback is enabled (iOS/watchOS only, downbeats only)
+    /// Whether haptic feedback is enabled (iOS/watchOS only, all beats)
     var hapticEnabled: Bool
 
     /// Whether to accent the first beat of each measure

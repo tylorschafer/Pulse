@@ -19,8 +19,8 @@ import os
 ///
 /// **Critical limitations:**
 /// - Taptic Engine cannot play overlapping haptics
-/// - Haptics limited to downbeats only to avoid overload
-/// - Maximum 3-4 haptics per second
+/// - Max tempo capped at 150 BPM (2.5 beats/sec) to support haptics on all beats
+/// - Maximum safe rate: 2-3 haptics per second
 /// - iPads typically lack haptic support
 ///
 /// **Thread safety:**
@@ -127,30 +127,28 @@ final class HapticManager: Sendable {
         }
     }
 
-    /// Play haptic feedback for a downbeat
+    /// Play haptic feedback for a beat
     ///
     /// This method is designed to be called from audio buffer completion callbacks
     /// and is thread-safe for use from any context.
     ///
     /// - Parameter isDownbeat: If true, plays a stronger haptic for the downbeat.
-    ///                        Only downbeats should trigger haptics to avoid overload.
+    ///                        Otherwise plays a standard haptic for regular beats.
     func playBeat(isDownbeat: Bool) {
-        guard isDownbeat else { return } // Only play haptics on downbeats
-
         let enabled = stateLock.withLock { $0.isEnabled }
         guard enabled else { return }
 
         #if os(iOS)
-        playiOSHaptic()
+        playiOSHaptic(isDownbeat: isDownbeat)
         #elseif os(watchOS)
-        playwatchOSHaptic()
+        playwatchOSHaptic(isDownbeat: isDownbeat)
         #endif
     }
 
     // MARK: - Platform-Specific Implementations
 
     #if os(iOS)
-    private func playiOSHaptic() {
+    private func playiOSHaptic(isDownbeat: Bool) {
         let isRunning = stateLock.withLock { $0.isEngineRunning }
         guard isRunning else {
             startEngine()
@@ -161,15 +159,15 @@ final class HapticManager: Sendable {
             guard let engine = engine else { return }
 
             do {
-                // Create a strong, sharp haptic for downbeat
+                // Vary intensity and sharpness based on beat type
                 let intensity = CHHapticEventParameter(
                     parameterID: .hapticIntensity,
-                    value: 1.0 // Maximum intensity for downbeat
+                    value: isDownbeat ? 1.0 : 0.6  // Stronger for downbeats
                 )
 
                 let sharpness = CHHapticEventParameter(
                     parameterID: .hapticSharpness,
-                    value: 1.0 // Sharp, percussive feel
+                    value: isDownbeat ? 1.0 : 0.8  // Sharper for downbeats
                 )
 
                 let event = CHHapticEvent(
@@ -189,9 +187,10 @@ final class HapticManager: Sendable {
     #endif
 
     #if os(watchOS)
-    private func playwatchOSHaptic() {
-        // Use .start for a strong, distinct downbeat haptic
-        WKInterfaceDevice.current().play(.start)
+    private func playwatchOSHaptic(isDownbeat: Bool) {
+        // Use different haptic types for downbeats vs regular beats
+        let hapticType: WKHapticType = isDownbeat ? .start : .click
+        WKInterfaceDevice.current().play(hapticType)
     }
     #endif
 

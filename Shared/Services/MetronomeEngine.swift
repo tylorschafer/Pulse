@@ -253,9 +253,9 @@ final class MetronomeEngine: Sendable {
 
     /// Start or restart the metronome with given settings
     func start(tempo: Int, beatsPerMeasure: Int, accentFirstBeat: Bool) {
-        // Validate tempo range (40-240 BPM as per TSP-7)
-        guard (40...240).contains(tempo) else {
-            print("Tempo \(tempo) out of valid range (40-240 BPM)")
+        // Validate tempo range (40-150 BPM to support haptics on all beats)
+        guard (40...150).contains(tempo) else {
+            print("Tempo \(tempo) out of valid range (40-150 BPM)")
             return
         }
 
@@ -337,7 +337,7 @@ final class MetronomeEngine: Sendable {
 
     /// Update tempo on the fly (will apply to next scheduled beats)
     func updateTempo(_ newTempo: Int) {
-        guard (40...240).contains(newTempo) else { return }
+        guard (40...150).contains(newTempo) else { return }
         stateLock.withLock { state in
             state.tempo = newTempo
         }

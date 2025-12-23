@@ -109,7 +109,7 @@ struct MetronomeEngineTests {
 
         // Invalid tempo above range
         engine.start(tempo: 300, beatsPerMeasure: 4, accentFirstBeat: true)
-        #expect(!engine.isPlaying, "Engine should not start with tempo above 240 BPM")
+        #expect(!engine.isPlaying, "Engine should not start with tempo above 150 BPM")
 
         // Valid tempo at lower bound
         engine.start(tempo: 40, beatsPerMeasure: 4, accentFirstBeat: true)
@@ -117,7 +117,7 @@ struct MetronomeEngineTests {
         engine.stop()
 
         // Valid tempo at upper bound
-        engine.start(tempo: 240, beatsPerMeasure: 4, accentFirstBeat: true)
+        engine.start(tempo: 150, beatsPerMeasure: 4, accentFirstBeat: true)
         #expect(engine.isPlaying)
         engine.stop()
     }
@@ -133,7 +133,7 @@ struct MetronomeEngineTests {
         #expect(engine.currentTempo == 140)
 
         // Invalid tempo should not update
-        engine.updateTempo(300)
+        engine.updateTempo(200)
         #expect(engine.currentTempo == 140, "Tempo should not update to invalid value")
 
         engine.stop()
@@ -175,9 +175,9 @@ struct MetronomeEngineTests {
             }
         }
 
-        engine.start(tempo: 240, beatsPerMeasure: 4, accentFirstBeat: true) // Fast tempo for quick test
+        engine.start(tempo: 150, beatsPerMeasure: 4, accentFirstBeat: true) // Fast tempo for quick test
 
-        // Wait for several beats (using fast 240 BPM = 0.25s per beat)
+        // Wait for several beats (using fast 150 BPM = 0.4s per beat)
         try await Task.sleep(for: .seconds(1.5))
 
         engine.stop()
@@ -211,7 +211,7 @@ struct MetronomeEngineTests {
             }
         }
 
-        engine.start(tempo: 240, beatsPerMeasure: 4, accentFirstBeat: true)
+        engine.start(tempo: 150, beatsPerMeasure: 4, accentFirstBeat: true)
         try await Task.sleep(for: .seconds(1.0))
         engine.stop()
 
@@ -227,7 +227,7 @@ struct MetronomeEngineTests {
             }
         }
 
-        engine.start(tempo: 240, beatsPerMeasure: 4, accentFirstBeat: false)
+        engine.start(tempo: 150, beatsPerMeasure: 4, accentFirstBeat: false)
         try await Task.sleep(for: .seconds(1.0))
         engine.stop()
 
