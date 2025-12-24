@@ -9,6 +9,15 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var viewModel = MetronomeViewModel()
+    @State private var volume: Float = 1.0
+
+    // Inverted binding for Digital Crown (so clockwise = increase volume)
+    private var invertedVolume: Binding<Double> {
+        Binding(
+            get: { 1.0 - Double(volume) },
+            set: { volume = Float(1.0 - $0) }
+        )
+    }
 
     var body: some View {
         TabView {
@@ -23,8 +32,25 @@ struct ContentView: View {
                     totalBeats: viewModel.settings.timeSignature.beatsPerMeasure,
                     isPlaying: viewModel.isPlaying,
                     tempo: viewModel.settings.tempo,
-                    onTap: viewModel.togglePlayback
+                    onTap: viewModel.togglePlayback,
+                    volume: $volume
                 )
+            }
+            .focusable(true)
+            .digitalCrownRotation(
+                invertedVolume,
+                from: 0.0,
+                through: 1.0,
+                by: 0.01,
+                sensitivity: .medium,
+                isContinuous: false,
+                isHapticFeedbackEnabled: true
+            )
+            .onChange(of: volume) { oldValue, newValue in
+                viewModel.updateVolume(newValue)
+            }
+            .onAppear {
+                volume = viewModel.settings.volume
             }
 
             // Page 2: Controls

@@ -162,12 +162,12 @@ final class HapticManager: Sendable {
                 // Vary intensity and sharpness based on beat type
                 let intensity = CHHapticEventParameter(
                     parameterID: .hapticIntensity,
-                    value: isDownbeat ? 1.0 : 0.6  // Stronger for downbeats
+                    value: isDownbeat ? 1.0 : 0.9  // Stronger for downbeats
                 )
 
                 let sharpness = CHHapticEventParameter(
                     parameterID: .hapticSharpness,
-                    value: isDownbeat ? 1.0 : 0.8  // Sharper for downbeats
+                    value: isDownbeat ? 1.0 : 0.9  // Sharper for downbeats
                 )
 
                 let event = CHHapticEvent(

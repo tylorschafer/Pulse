@@ -99,7 +99,8 @@ final class MetronomeViewModel {
         engine?.start(
             tempo: settings.tempo,
             beatsPerMeasure: settings.timeSignature.beatsPerMeasure,
-            accentFirstBeat: settings.accentFirstBeat
+            accentFirstBeat: settings.accentFirstBeat,
+            volume: settings.volume
         )
 
         isPlaying = true
@@ -190,5 +191,18 @@ final class MetronomeViewModel {
         defaults.saveSettings(settings)
 
         // TODO: Implement audio muting in engine when needed
+    }
+
+    /// Update volume level
+    ///
+    /// - Parameter newVolume: The new volume level (0.0 to 1.0)
+    func updateVolume(_ newVolume: Float) {
+        // Clamp to valid range
+        let clampedVolume = min(max(newVolume, 0.0), 1.0)
+        settings.volume = clampedVolume
+        engine?.updateVolume(clampedVolume)
+
+        // Persist settings
+        defaults.saveSettings(settings)
     }
 }

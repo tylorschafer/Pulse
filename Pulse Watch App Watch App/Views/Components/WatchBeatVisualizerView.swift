@@ -13,19 +13,33 @@ struct WatchBeatVisualizerView: View {
     let isPlaying: Bool
     let tempo: Int
     let onTap: () -> Void
+    @Binding var volume: Float
 
     @State private var pulseAnimation = false
 
     var body: some View {
         VStack(spacing: 0) {
-            // Top: BPM display (complication style)
-            Text("\(tempo) BPM")
-                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                .foregroundStyle(.white.opacity(0.7))
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(.ultraThinMaterial, in: Capsule())
-                .padding(.top, 20)
+            // Top: BPM and Volume display
+            HStack(spacing: 12) {
+                Text("\(tempo) BPM")
+                    .font(.system(size: 16, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.7))
+
+                // Volume indicator
+                HStack(spacing: 2) {
+                    Image(systemName: volumeIcon)
+                        .font(.system(size: 12))
+                        .foregroundStyle(.white.opacity(0.6))
+                    Text("\(Int(volume * 100))%")
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.6))
+                        .monospacedDigit()
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial, in: Capsule())
+            .padding(.top, 20)
 
             Spacer()
 
@@ -131,6 +145,20 @@ struct WatchBeatVisualizerView: View {
             .padding(.vertical, 8)
             .background(.thinMaterial, in: Capsule())
             .padding(.bottom, 20)
+        }
+    }
+
+    // MARK: - Computed Properties
+
+    private var volumeIcon: String {
+        if volume < 0.01 {
+            return "speaker.slash.fill"
+        } else if volume < 0.33 {
+            return "speaker.wave.1.fill"
+        } else if volume < 0.66 {
+            return "speaker.wave.2.fill"
+        } else {
+            return "speaker.wave.3.fill"
         }
     }
 }

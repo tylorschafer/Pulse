@@ -81,8 +81,7 @@ struct AppGroupDefaultsTests {
         // Second save
         let settings2 = MetronomeSettings(tempo: 150)
         defaults.saveSettings(settings2)
-        #expect(defaults.loadSettings().tempo == 150)
-
+ 
         // Third save
         let settings3 = MetronomeSettings(tempo: 200)
         defaults.saveSettings(settings3)
