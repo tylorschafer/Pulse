@@ -53,15 +53,15 @@ struct MetronomeSettingsTests {
     @Test("Tempo clamps to maximum value")
     func testTempoMaximumClamping() {
         var settings = MetronomeSettings(tempo: 500)
-        #expect(settings.tempo == 300, "Tempo above maximum should be clamped to 300")
+        #expect(settings.tempo == 150, "Tempo above maximum should be clamped to 150")
 
         settings.tempo = 400
-        #expect(settings.tempo == 300, "Setting tempo above maximum should clamp to 300")
+        #expect(settings.tempo == 150, "Setting tempo above maximum should clamp to 150")
     }
 
     @Test("Valid tempo values are not clamped")
     func testValidTempoValues() {
-        let validTempos = [30, 60, 120, 180, 240, 300]
+        let validTempos = [30, 60, 120, 150]
 
         for tempo in validTempos {
             let settings = MetronomeSettings(tempo: tempo)
@@ -80,7 +80,7 @@ struct MetronomeSettingsTests {
         #expect(settings.tempo == 30)
 
         settings.tempo = 350
-        #expect(settings.tempo == 300)
+        #expect(settings.tempo == 150)
     }
 
     // MARK: - Beat Interval Tests
@@ -97,10 +97,11 @@ struct MetronomeSettingsTests {
         #expect(settings.beatInterval == 0.5, "120 BPM should have 0.5 second interval")
     }
 
-    @Test("Beat interval calculates correctly for 240 BPM")
-    func testBeatIntervalAt240BPM() {
-        let settings = MetronomeSettings(tempo: 240)
-        #expect(settings.beatInterval == 0.25, "240 BPM should have 0.25 second interval")
+    @Test("Beat interval calculates correctly for 150 BPM")
+    func testBeatIntervalAt150BPM() {
+        let settings = MetronomeSettings(tempo: 150)
+        let expectedInterval = 60.0 / 150.0
+        #expect(abs(settings.beatInterval - expectedInterval) < 0.0001, "150 BPM should have correct interval")
     }
 
     @Test("Beat interval updates when tempo changes")
@@ -186,7 +187,7 @@ struct MetronomeSettingsTests {
         let decoder = JSONDecoder()
 
         let decoded = try decoder.decode(MetronomeSettings.self, from: data)
-        #expect(decoded.tempo == 300, "Decoded tempo should be clamped to maximum")
+        #expect(decoded.tempo == 150, "Decoded tempo should be clamped to maximum")
     }
 
     // MARK: - Constants Tests
@@ -194,7 +195,7 @@ struct MetronomeSettingsTests {
     @Test("Tempo constants have correct values")
     func testTempoConstants() {
         #expect(MetronomeSettings.minTempo == 30)
-        #expect(MetronomeSettings.maxTempo == 300)
+        #expect(MetronomeSettings.maxTempo == 150)
         #expect(MetronomeSettings.defaultTempo == 120)
     }
 }

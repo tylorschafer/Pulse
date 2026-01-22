@@ -41,6 +41,7 @@ final class MetronomeEngine: Sendable {
         var tempo: Int = 120
         var beatsPerMeasure: Int = 4
         var accentFirstBeat: Bool = true
+        var volume: Float = 1.0
     }
 
     private let stateLock = OSAllocatedUnfairLock(initialState: State())
@@ -158,7 +159,7 @@ final class MetronomeEngine: Sendable {
         engine.attach(playerNode)
         engine.connect(playerNode, to: engine.mainMixerNode, format: format)
 
-        // Set volume to ensure audio is audible
+        // Set default volume (will be updated when playback starts)
         playerNode.volume = 1.0
         engine.mainMixerNode.volume = 1.0
 
@@ -252,10 +253,10 @@ final class MetronomeEngine: Sendable {
     // MARK: - Playback Control
 
     /// Start or restart the metronome with given settings
-    func start(tempo: Int, beatsPerMeasure: Int, accentFirstBeat: Bool) {
-        // Validate tempo range (40-240 BPM as per TSP-7)
-        guard (40...240).contains(tempo) else {
-            print("Tempo \(tempo) out of valid range (40-240 BPM)")
+    func start(tempo: Int, beatsPerMeasure: Int, accentFirstBeat: Bool, volume: Float = 1.0) {
+        // Validate tempo range (40-150 BPM to support haptics on all beats)
+        guard (40...150).contains(tempo) else {
+            print("Tempo \(tempo) out of valid range (40-150 BPM)")
             return
         }
 
@@ -284,9 +285,13 @@ final class MetronomeEngine: Sendable {
             state.tempo = tempo
             state.beatsPerMeasure = beatsPerMeasure
             state.accentFirstBeat = accentFirstBeat
+            state.volume = min(max(volume, 0.0), 1.0) // Clamp to 0.0-1.0
             state.currentBeat = 0
             state.beatsScheduled = 0
         }
+
+        // Set volume on player node
+        playerNode.volume = min(max(volume, 0.0), 1.0)
 
         // Start the player node first
         playerNode.play()
@@ -337,10 +342,19 @@ final class MetronomeEngine: Sendable {
 
     /// Update tempo on the fly (will apply to next scheduled beats)
     func updateTempo(_ newTempo: Int) {
-        guard (40...240).contains(newTempo) else { return }
+        guard (40...150).contains(newTempo) else { return }
         stateLock.withLock { state in
             state.tempo = newTempo
         }
+    }
+
+    /// Update volume on the fly
+    func updateVolume(_ newVolume: Float) {
+        let clampedVolume = min(max(newVolume, 0.0), 1.0)
+        stateLock.withLock { state in
+            state.volume = clampedVolume
+        }
+        playerNode.volume = clampedVolume
     }
 
     // MARK: - Beat Scheduling
@@ -498,6 +512,11 @@ final class MetronomeEngine: Sendable {
     /// Whether the metronome is currently playing
     var isPlaying: Bool {
         stateLock.withLock { $0.isPlaying }
+    }
+
+    /// Current volume level
+    var currentVolume: Float {
+        stateLock.withLock { $0.volume }
     }
 
     /// Enable or disable haptic feedback

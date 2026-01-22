@@ -12,13 +12,13 @@ struct MetronomeSettings: Equatable, Sendable {
     // MARK: - Constants
 
     static let minTempo = 30
-    static let maxTempo = 300
+    static let maxTempo = 150  // Capped at 150 BPM (2.5 beats/sec) to support haptics on all beats
     static let defaultTempo = 120
 
     // MARK: - Properties
 
     /// Tempo in beats per minute (BPM)
-    /// Valid range: 30-300 BPM
+    /// Valid range: 30-150 BPM (capped to support haptics on all beats without overload)
     var tempo: Int {
         didSet {
             tempo = tempo.clamped(to: Self.minTempo...Self.maxTempo)
@@ -31,11 +31,14 @@ struct MetronomeSettings: Equatable, Sendable {
     /// Whether sound/audio feedback is enabled
     var soundEnabled: Bool
 
-    /// Whether haptic feedback is enabled (iOS/watchOS only, downbeats only)
+    /// Whether haptic feedback is enabled (iOS/watchOS only, all beats)
     var hapticEnabled: Bool
 
     /// Whether to accent the first beat of each measure
     var accentFirstBeat: Bool
+
+    /// Volume level for audio playback (0.0 = silent, 1.0 = max)
+    var volume: Float
 
     // MARK: - Initialization
 
@@ -44,13 +47,15 @@ struct MetronomeSettings: Equatable, Sendable {
         timeSignature: TimeSignature = .fourFour,
         soundEnabled: Bool = true,
         hapticEnabled: Bool = true,
-        accentFirstBeat: Bool = true
+        accentFirstBeat: Bool = true,
+        volume: Float = 1.0
     ) {
         self.tempo = tempo.clamped(to: Self.minTempo...Self.maxTempo)
         self.timeSignature = timeSignature
         self.soundEnabled = soundEnabled
         self.hapticEnabled = hapticEnabled
         self.accentFirstBeat = accentFirstBeat
+        self.volume = min(max(volume, 0.0), 1.0) // Clamp to 0.0-1.0
     }
 
     // MARK: - Computed Properties
@@ -77,11 +82,13 @@ extension MetronomeSettings: Codable {
         case soundEnabled
         case hapticEnabled
         case accentFirstBeat
+        case volume
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let decodedTempo = try container.decode(Int.self, forKey: .tempo)
+        let decodedVolume = try container.decodeIfPresent(Float.self, forKey: .volume) ?? 1.0
 
         // Initialize with clamped tempo
         self.tempo = decodedTempo.clamped(to: Self.minTempo...Self.maxTempo)
@@ -89,6 +96,7 @@ extension MetronomeSettings: Codable {
         self.soundEnabled = try container.decode(Bool.self, forKey: .soundEnabled)
         self.hapticEnabled = try container.decode(Bool.self, forKey: .hapticEnabled)
         self.accentFirstBeat = try container.decode(Bool.self, forKey: .accentFirstBeat)
+        self.volume = min(max(decodedVolume, 0.0), 1.0) // Clamp to 0.0-1.0
     }
 
     func encode(to encoder: Encoder) throws {
@@ -98,6 +106,7 @@ extension MetronomeSettings: Codable {
         try container.encode(soundEnabled, forKey: .soundEnabled)
         try container.encode(hapticEnabled, forKey: .hapticEnabled)
         try container.encode(accentFirstBeat, forKey: .accentFirstBeat)
+        try container.encode(volume, forKey: .volume)
     }
 }
 
