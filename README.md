@@ -8,8 +8,10 @@ A professional-grade iOS/watchOS metronome featuring sub-millisecond audio timin
 
 ## Overview
 
+# Watch App
 ![Watch App](https://github.com/user-attachments/assets/e88b7260-df97-4be5-b877-8485bbd9a396)
 
+# iOS App
 ![Screen Recording 2026-01-22 at 3 59 44 PM](https://github.com/user-attachments/assets/e1b055f1-4cc1-4312-a2a2-d0cbd5de8845)
 
 Pulse solves a fundamental challenge in metronome development: **timing drift**. Standard iOS timers (`Timer`, `DispatchSourceTimer`) accumulate 10+ milliseconds of error after just 60 seconds due to run loop interference. For musicians, this drift is unacceptable.
